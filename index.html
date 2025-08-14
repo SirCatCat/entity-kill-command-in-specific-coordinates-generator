@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="de">
+<html lang="en">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -32,83 +32,83 @@
 </head>
 <body>
   <div class="wrap">
-    <h1>@e-Selector Generator</h1>
-    <p class="sub">Gib zwei gegenüberliegende Ecken ein. Tool berechnet <code>x,y,z</code> und <code>dx,dy,dz</code>. Mit einem Klick kopieren.</p>
+    <h1>@e Selector Generator</h1>
+    <p class="sub">Enter two opposite corners. Tool calculates <code>x,y,z</code> and <code>dx,dy,dz</code>. Copy with one click.</p>
 
     <div class="grid">
       <div class="card">
-        <h3 style="margin:0 0 8px">Eingabe</h3>
+        <h3 style="margin:0 0 8px">Input</h3>
         <div class="row">
           <div>
-            <label>Ecke A · X</label>
+            <label>Corner A · X</label>
             <input id="x1" type="number" step="1" value="58" />
           </div>
           <div>
-            <label>Ecke A · Y</label>
+            <label>Corner A · Y</label>
             <input id="y1" type="number" step="1" value="56" />
           </div>
           <div>
-            <label>Ecke A · Z</label>
+            <label>Corner A · Z</label>
             <input id="z1" type="number" step="1" value="-209" />
           </div>
         </div>
         <div class="row" style="margin-top:8px">
           <div>
-            <label>Ecke B · X</label>
+            <label>Corner B · X</label>
             <input id="x2" type="number" step="1" value="82" />
           </div>
           <div>
-            <label>Ecke B · Y</label>
+            <label>Corner B · Y</label>
             <input id="y2" type="number" step="1" value="84" />
           </div>
           <div>
-            <label>Ecke B · Z</label>
+            <label>Corner B · Z</label>
             <input id="z2" type="number" step="1" value="-176" />
           </div>
         </div>
 
         <div class="badges">
-          <label class="badge"><input id="excludePlayers" type="checkbox" checked /> Spieler ausschließen <code>type=!player</code></label>
-          <label class="badge"><input id="onlyItems" type="checkbox" /> Nur Items <code>type=item</code></label>
-          <label class="badge"><input id="onlyMobs" type="checkbox" /> Nur Mobs (kein Spieler/Item)</label>
-          <label class="badge"><input id="onlySelector" type="checkbox" /> Nur @e anzeigen</label>
+          <label class="badge"><input id="excludePlayers" type="checkbox" checked /> Exclude players <code>type=!player</code></label>
+          <label class="badge"><input id="onlyItems" type="checkbox" /> Only items <code>type=item</code></label>
+          <label class="badge"><input id="onlyMobs" type="checkbox" /> Only mobs (no players/items)</label>
+          <label class="badge"><input id="onlySelector" type="checkbox" /> Show only @e</label>
         </div>
 
         <div class="row2" style="margin-top:8px">
           <div>
-            <label>Weitere Filter (optional, z. B. <code>name=Bob,nbt={CustomName:\"...\"}</code>)</label>
-            <input id="extra" type="text" placeholder="freie Selector-Argumente" />
+            <label>Extra filters (optional, e.g. <code>name=Bob,nbt={CustomName:\"...\"}</code>)</label>
+            <input id="extra" type="text" placeholder="free selector arguments" />
           </div>
           <div>
-            <label>Sortierung/Radius (optional, z. B. <code>sort=nearest,distance=..10</code>)</label>
+            <label>Sorting/Radius (optional, e.g. <code>sort=nearest,distance=..10</code>)</label>
             <input id="extra2" type="text" placeholder="sort=...,limit=...,distance=..R" />
           </div>
         </div>
 
         <div class="actions">
-          <button class="primary" id="gen">Generieren</button>
-          <button class="ghost" id="swap">Ecken tauschen</button>
-          <button class="ghost" id="reset">Zurücksetzen</button>
+          <button class="primary" id="gen">Generate</button>
+          <button class="ghost" id="swap">Swap corners</button>
+          <button class="ghost" id="reset">Reset</button>
         </div>
-        <p class="hint">Hinweis: Der Quader nutzt die kleinere Ecke als Start. <code>dx/dy/dz</code> sind die Distanzen von Start zu Ende (Vanilla-Logik, inklusiv).</p>
+        <p class="hint">Note: The cuboid uses the smaller corner as start. <code>dx/dy/dz</code> are distances from start to end (Vanilla logic, inclusive).</p>
       </div>
 
       <div class="card">
-        <h3 style="margin:0 0 8px">Ausgabe</h3>
-        <label>Nur Selector (@e[...])</label>
+        <h3 style="margin:0 0 8px">Output</h3>
+        <label>Only selector (@e[...])</label>
         <textarea id="selector" readonly></textarea>
         <div class="actions">
-          <button class="primary" data-copy="#selector">@e kopieren</button>
+          <button class="primary" data-copy="#selector">Copy @e</button>
         </div>
-        <label class="extra-out" style="margin-top:10px">/kill mit Selector</label>
+        <label class="extra-out" style="margin-top:10px">/kill with selector</label>
         <textarea class="extra-out" id="kill" readonly></textarea>
         <div class="actions extra-out">
-          <button class="ghost" data-copy="#kill">/kill kopieren</button>
+          <button class="ghost" data-copy="#kill">Copy /kill</button>
         </div>
-        <label class="extra-out" style="margin-top:10px">/data Beispiel (Kisteninhalt von A → B)</label>
+        <label class="extra-out" style="margin-top:10px">/data example (Chest A → Chest B)</label>
         <textarea class="extra-out" id="data" readonly></textarea>
         <div class="actions extra-out">
-          <button class="ghost" data-copy="#data">/data kopieren</button>
+          <button class="ghost" data-copy="#data">Copy /data</button>
         </div>
       </div>
     </div>
@@ -125,7 +125,7 @@ function buildSelector(){
   const y2=+document.getElementById('y2').value;
   const z2=+document.getElementById('z2').value;
   const [xs,xe]=norm(x1,x2), [ys,ye]=norm(y1,y2), [zs,ze]=norm(z1,z2);
-  const dx=xe-xs, dy=ye-ys, dz=ze-zs; // Vanilla: inclusive box uses delta
+  const dx=xe-xs, dy=ye-ys, dz=ze-zs;
 
   const parts=[`x=${fmt(xs)}`,`y=${fmt(ys)}`,`z=${fmt(zs)}`,`dx=${fmt(dx)}`,`dy=${fmt(dy)}`,`dz=${fmt(dz)}`];
 
@@ -138,7 +138,6 @@ function buildSelector(){
   } else if(onlyMobs){
     parts.push('type=!player');
     parts.push('type=!item');
-    // Tipp: weitere Typen lassen sich ergänzen, z. B. 'type=!arrow'
   } else if(excludePlayers){
     parts.push('type=!player');
   }
@@ -162,8 +161,11 @@ function copySel(btn){
   target.select();
   target.setSelectionRange(0, target.value.length);
   navigator.clipboard.writeText(target.value).then(()=>{
-    btn.textContent='Kopiert!';
-    setTimeout(()=>btn.textContent=btn.textContent.includes('@e')?'@e kopieren':btn.textContent.includes('/kill')?'/kill kopieren':'/data kopieren',900);
+    btn.textContent='Copied!';
+    setTimeout(()=>{
+      btn.textContent=btn.textContent.includes('@e')?'Copy @e':
+        btn.textContent.includes('/kill')?'Copy /kill':'Copy /data';
+    },900);
   });
 }
 
@@ -174,8 +176,7 @@ document.getElementById('gen').addEventListener('click', buildSelector);
 document.querySelectorAll('[data-copy]').forEach(b=>b.addEventListener('click',e=>copySel(e.currentTarget)));
 
 document.getElementById('swap').addEventListener('click',()=>{
-  const ids=['x','y','z'];
-  ids.forEach(ax=>{
+  ['x','y','z'].forEach(ax=>{
     const a=document.getElementById(ax+'1');
     const b=document.getElementById(ax+'2');
     const tmp=a.value; a.value=b.value; b.value=tmp;
@@ -194,7 +195,6 @@ document.getElementById('reset').addEventListener('click',()=>{
   buildSelector();
 });
 
-// Nur-Selector-Modus umschalten
 function toggleOnlySelector(){
   const only = document.getElementById('onlySelector')?.checked;
   document.querySelectorAll('.extra-out').forEach(el=>{
@@ -204,7 +204,6 @@ function toggleOnlySelector(){
 
 document.getElementById('onlySelector')?.addEventListener('change', toggleOnlySelector);
 
-// Initial ausrechnen
 buildSelector();
 toggleOnlySelector();
 </script>
