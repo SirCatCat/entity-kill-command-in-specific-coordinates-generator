@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Minecraft @e Selector Generator</title>
+<style>
+  :root{--bg:#0f1220;--panel:#171a2b;--muted:#9aa7c0;--text:#e9eef6;--accent:#6aa9ff}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,Segoe UI,Roboto,Ubuntu,sans-serif;background:var(--bg);color:var(--text)}
+  .wrap{max-width:980px;margin:32px auto;padding:0 16px}
+  h1{font-size:26px;margin:0 0 6px}
+  p.sub{margin:0 0 16px;color:var(--muted)}
+  .grid{display:grid;gap:16px}
+  @media(min-width:860px){.grid{grid-template-columns:1.1fr .9fr}}
+  .card{background:var(--panel);border:1px solid #242e4b;border-radius:16px;padding:16px}
+  label{font-size:12px;color:var(--muted)}
+  input,textarea,button,select{width:100%;padding:10px 12px;border-radius:12px;border:1px solid #2a3557;background:#0b1124;color:var(--text)}
+  input:focus,textarea:focus,select:focus{outline:2px solid var(--accent)}
+  textarea{min-height:110px;resize:vertical}
+  .row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .row2{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+  .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+  .primary{background:linear-gradient(135deg,#5da2ff,#7cb8ff);border:0;color:#071222;font-weight:700}
+  .ghost{background:transparent}
+  .badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  .badge{display:inline-flex;gap:6px;align-items:center;padding:6px 10px;border:1px solid #2a3557;border-radius:999px;color:var(--muted);font-size:12px}
+  code{background:#0b1124;border:1px solid #2a3557;padding:1px 6px;border-radius:6px}
+  .hint{color:var(--muted);font-size:12px;margin-top:8px}
+.hidden{display:none}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>@e-Selector Generator</h1>
+    <p class="sub">Gib zwei gegenüberliegende Ecken ein. Tool berechnet <code>x,y,z</code> und <code>dx,dy,dz</code>. Mit einem Klick kopieren.</p>
+
+    <div class="grid">
+      <div class="card">
+        <h3 style="margin:0 0 8px">Eingabe</h3>
+        <div class="row">
+          <div>
+            <label>Ecke A · X</label>
+            <input id="x1" type="number" step="1" value="58" />
+          </div>
+          <div>
+            <label>Ecke A · Y</label>
+            <input id="y1" type="number" step="1" value="56" />
+          </div>
+          <div>
+            <label>Ecke A · Z</label>
+            <input id="z1" type="number" step="1" value="-209" />
+          </div>
+        </div>
+        <div class="row" style="margin-top:8px">
+          <div>
+            <label>Ecke B · X</label>
+            <input id="x2" type="number" step="1" value="82" />
+          </div>
+          <div>
+            <label>Ecke B · Y</label>
+            <input id="y2" type="number" step="1" value="84" />
+          </div>
+          <div>
+            <label>Ecke B · Z</label>
+            <input id="z2" type="number" step="1" value="-176" />
+          </div>
+        </div>
+
+        <div class="badges">
+          <label class="badge"><input id="excludePlayers" type="checkbox" checked /> Spieler ausschließen <code>type=!player</code></label>
+          <label class="badge"><input id="onlyItems" type="checkbox" /> Nur Items <code>type=item</code></label>
+          <label class="badge"><input id="onlyMobs" type="checkbox" /> Nur Mobs (kein Spieler/Item)</label>
+          <label class="badge"><input id="onlySelector" type="checkbox" /> Nur @e anzeigen</label>
+        </div>
+
+        <div class="row2" style="margin-top:8px">
+          <div>
+            <label>Weitere Filter (optional, z. B. <code>name=Bob,nbt={CustomName:\"...\"}</code>)</label>
+            <input id="extra" type="text" placeholder="freie Selector-Argumente" />
+          </div>
+          <div>
+            <label>Sortierung/Radius (optional, z. B. <code>sort=nearest,distance=..10</code>)</label>
+            <input id="extra2" type="text" placeholder="sort=...,limit=...,distance=..R" />
+          </div>
+        </div>
+
+        <div class="actions">
+          <button class="primary" id="gen">Generieren</button>
+          <button class="ghost" id="swap">Ecken tauschen</button>
+          <button class="ghost" id="reset">Zurücksetzen</button>
+        </div>
+        <p class="hint">Hinweis: Der Quader nutzt die kleinere Ecke als Start. <code>dx/dy/dz</code> sind die Distanzen von Start zu Ende (Vanilla-Logik, inklusiv).</p>
+      </div>
+
+      <div class="card">
+        <h3 style="margin:0 0 8px">Ausgabe</h3>
+        <label>Nur Selector (@e[...])</label>
+        <textarea id="selector" readonly></textarea>
+        <div class="actions">
+          <button class="primary" data-copy="#selector">@e kopieren</button>
+        </div>
+        <label class="extra-out" style="margin-top:10px">/kill mit Selector</label>
+        <textarea class="extra-out" id="kill" readonly></textarea>
+        <div class="actions extra-out">
+          <button class="ghost" data-copy="#kill">/kill kopieren</button>
+        </div>
+        <label class="extra-out" style="margin-top:10px">/data Beispiel (Kisteninhalt von A → B)</label>
+        <textarea class="extra-out" id="data" readonly></textarea>
+        <div class="actions extra-out">
+          <button class="ghost" data-copy="#data">/data kopieren</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+function norm(a,b){return a<=b?[a,b]:[b,a]}
+function fmt(n){return Number.isFinite(n)?String(Math.trunc(n)):'0'}
+function buildSelector(){
+  const x1=+document.getElementById('x1').value;
+  const y1=+document.getElementById('y1').value;
+  const z1=+document.getElementById('z1').value;
+  const x2=+document.getElementById('x2').value;
+  const y2=+document.getElementById('y2').value;
+  const z2=+document.getElementById('z2').value;
+  const [xs,xe]=norm(x1,x2), [ys,ye]=norm(y1,y2), [zs,ze]=norm(z1,z2);
+  const dx=xe-xs, dy=ye-ys, dz=ze-zs; // Vanilla: inclusive box uses delta
+
+  const parts=[`x=${fmt(xs)}`,`y=${fmt(ys)}`,`z=${fmt(zs)}`,`dx=${fmt(dx)}`,`dy=${fmt(dy)}`,`dz=${fmt(dz)}`];
+
+  const excludePlayers=document.getElementById('excludePlayers').checked;
+  const onlyItems=document.getElementById('onlyItems').checked;
+  const onlyMobs=document.getElementById('onlyMobs').checked;
+
+  if(onlyItems){
+    parts.push('type=item');
+  } else if(onlyMobs){
+    parts.push('type=!player');
+    parts.push('type=!item');
+    // Tipp: weitere Typen lassen sich ergänzen, z. B. 'type=!arrow'
+  } else if(excludePlayers){
+    parts.push('type=!player');
+  }
+
+  const extra=document.getElementById('extra').value.trim();
+  const extra2=document.getElementById('extra2').value.trim();
+  if(extra) parts.push(extra);
+  if(extra2) parts.push(extra2);
+
+  const sel=`@e[${parts.join(',')}]`;
+  const kill=`/kill ${sel}`;
+  const data=`/data modify block ${fmt(x2)} ${fmt(y2)} ${fmt(z2)} Items set from block ${fmt(x1)} ${fmt(y1)} ${fmt(z1)} Items`;
+
+  document.getElementById('selector').value=sel;
+  document.getElementById('kill').value=kill;
+  document.getElementById('data').value=data;
+}
+
+function copySel(btn){
+  const target=document.querySelector(btn.dataset.copy);
+  target.select();
+  target.setSelectionRange(0, target.value.length);
+  navigator.clipboard.writeText(target.value).then(()=>{
+    btn.textContent='Kopiert!';
+    setTimeout(()=>btn.textContent=btn.textContent.includes('@e')?'@e kopieren':btn.textContent.includes('/kill')?'/kill kopieren':'/data kopieren',900);
+  });
+}
+
+document.getElementById('gen').addEventListener('click', buildSelector);
+['x1','y1','z1','x2','y2','z2','excludePlayers','onlyItems','onlyMobs','extra','extra2']
+  .forEach(id=>document.getElementById(id).addEventListener('input', buildSelector));
+
+document.querySelectorAll('[data-copy]').forEach(b=>b.addEventListener('click',e=>copySel(e.currentTarget)));
+
+document.getElementById('swap').addEventListener('click',()=>{
+  const ids=['x','y','z'];
+  ids.forEach(ax=>{
+    const a=document.getElementById(ax+'1');
+    const b=document.getElementById(ax+'2');
+    const tmp=a.value; a.value=b.value; b.value=tmp;
+  });
+  buildSelector();
+});
+
+document.getElementById('reset').addEventListener('click',()=>{
+  ['x1','y1','z1','x2','y2','z2','extra','extra2'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el.tagName==='INPUT') el.value='';
+  });
+  document.getElementById('excludePlayers').checked=true;
+  document.getElementById('onlyItems').checked=false;
+  document.getElementById('onlyMobs').checked=false;
+  buildSelector();
+});
+
+// Nur-Selector-Modus umschalten
+function toggleOnlySelector(){
+  const only = document.getElementById('onlySelector')?.checked;
+  document.querySelectorAll('.extra-out').forEach(el=>{
+    el.classList.toggle('hidden', !!only);
+  });
+}
+
+document.getElementById('onlySelector')?.addEventListener('change', toggleOnlySelector);
+
+// Initial ausrechnen
+buildSelector();
+toggleOnlySelector();
+</script>
+</body>
+</html>
